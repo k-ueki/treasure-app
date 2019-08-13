@@ -2,7 +2,6 @@ package repository
 
 import (
 	"database/sql"
-	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/voyagegroup/treasure-app/model"
@@ -11,7 +10,6 @@ import (
 func AllArticleComment(db *sqlx.DB) ([]model.ArticleComment, error) {
 	a := make([]model.ArticleComment, 0)
 	if err := db.Select(&a, `SELECT id, user_id, article_id, body FROM article`); err != nil {
-		fmt.Println("RR")
 		return nil, err
 	}
 	return a, nil
@@ -19,14 +17,23 @@ func AllArticleComment(db *sqlx.DB) ([]model.ArticleComment, error) {
 
 func FindArticleComment(db *sqlx.DB, id int64) (*model.ArticleComment, error) {
 	a := model.ArticleComment{}
-	if err := db.Get(&a, `SELECT body FROM article_comment WHERE id = ?`, id); err != nil {
+
+	if err := db.Get(&a, `SELECT id, user_id, article_id, body FROM article_comment WHERE id = ?`, id); err != nil {
+		return nil, err
+	}
+	return &a, nil
+}
+
+func FindArticleCommentByAID(db *sqlx.DB, id int64) (*[]model.ArticleComment, error) {
+	a := []model.ArticleComment{}
+
+	if err := db.Select(&a, `SELECT id, user_id, article_id, body FROM article_comment WHERE article_id = ?`, id); err != nil {
 		return nil, err
 	}
 	return &a, nil
 }
 
 func CreateArticleComment(db *sqlx.Tx, a *model.ArticleComment) (sql.Result, error) {
-	fmt.Println(a)
 	stmt, err := db.Prepare(`INSERT INTO article_comment (user_id, article_id, body) VALUES (?, ?, ?)`)
 	if err != nil {
 		return nil, err

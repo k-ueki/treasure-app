@@ -5,7 +5,7 @@ PORT := 1991
 HOST := localhost
 TOKEN_FILE := .idToken
 
-ARTICLE_ID:=1
+ARTICLE_ID:=2
 ARTICLE_TITLE:=title
 ARTICLE_BODY:=body
 ARTICLE_UPDATE_BODY := updated
