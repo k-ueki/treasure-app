@@ -126,25 +126,25 @@ func (a *ArticleComment) Update(w http.ResponseWriter, r *http.Request) (int, in
 	return http.StatusNoContent, nil, nil
 }
 
-//func (a *Comment) Destroy(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
-//	vars := mux.Vars(r)
-//	id, ok := vars["id"]
-//	if !ok {
-//		return http.StatusBadRequest, nil, &httputil.HTTPError{Message: "invalid path parameter"}
-//	}
-//
-//	aid, err := strconv.ParseInt(id, 10, 64)
-//	if err != nil {
-//		return http.StatusBadRequest, nil, err
-//	}
-//
-//	articleService := service.NewComment(a.dbx)
-//	err = articleService.Destroy(aid)
-//	if err != nil && errors.Cause(err) == sql.ErrNoRows {
-//		return http.StatusNotFound, nil, err
-//	} else if err != nil {
-//		return http.StatusInternalServerError, nil, err
-//	}
-//
-//	return http.StatusNoContent, nil, nil
-//}
+func (a *ArticleComment) Destroy(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+	vars := mux.Vars(r)
+	id, ok := vars["id"]
+	if !ok {
+		return http.StatusBadRequest, nil, &httputil.HTTPError{Message: "invalid path parameter"}
+	}
+
+	aid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return http.StatusBadRequest, nil, err
+	}
+
+	articlecommentService := service.NewArticleCommentService(a.dbx)
+	err = articlecommentService.Destroy(aid)
+	if err != nil && errors.Cause(err) == sql.ErrNoRows {
+		return http.StatusNotFound, nil, err
+	} else if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+
+	return http.StatusNoContent, nil, nil
+}

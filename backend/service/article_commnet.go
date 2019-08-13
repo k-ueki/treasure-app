@@ -40,26 +40,26 @@ func (a *ArticleComment) Update(id int64, newArticleComment *model.ArticleCommen
 	return nil
 }
 
-//func (a *Article) Destroy(id int64) error {
-//	_, err := repository.FindArticle(a.db, id)
-//	if err != nil {
-//		return errors.Wrap(err, "failed find article")
-//	}
-//
-//	if err := dbutil.TXHandler(a.db, func(tx *sqlx.Tx) error {
-//		_, err := repository.DestroyArticle(tx, id)
-//		if err != nil {
-//			return err
-//		}
-//		if err := tx.Commit(); err != nil {
-//			return err
-//		}
-//		return err
-//	}); err != nil {
-//		return errors.Wrap(err, "failed article delete transaction")
-//	}
-//	return nil
-//}
+func (a *ArticleComment) Destroy(id int64) error {
+	_, err := repository.FindArticleComment(a.db, id)
+	if err != nil {
+		return errors.Wrap(err, "failed find article")
+	}
+
+	if err := dbutil.TXHandler(a.db, func(tx *sqlx.Tx) error {
+		_, err := repository.DestroyArticleComment(tx, id)
+		if err != nil {
+			return err
+		}
+		if err := tx.Commit(); err != nil {
+			return err
+		}
+		return err
+	}); err != nil {
+		return errors.Wrap(err, "failed article delete transaction")
+	}
+	return nil
+}
 
 func (a *ArticleComment) Create(newArticleComment *model.ArticleComment) (int64, error) {
 	var createdId int64

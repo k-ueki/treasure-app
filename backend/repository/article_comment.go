@@ -44,13 +44,11 @@ func UpdateArticleComment(db *sqlx.Tx, id int64, a *model.ArticleComment) (sql.R
 	return stmt.Exec(a.Body, id)
 }
 
-//func DestroyArticle(db *sqlx.Tx, id int64) (sql.Result, error) {
-//	stmt, err := db.Prepare(`
-//DELETE FROM article WHERE id = ?
-//`)
-//	if err != nil {
-//		return nil, err
-//	}
-//	defer stmt.Close()
-//	return stmt.Exec(id)
-//}
+func DestroyArticleComment(db *sqlx.Tx, id int64) (sql.Result, error) {
+	stmt, err := db.Prepare(`DELETE FROM article_comment WHERE id = ?`)
+	if err != nil {
+		return nil, err
+	}
+	defer stmt.Close()
+	return stmt.Exec(id)
+}

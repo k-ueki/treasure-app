@@ -45,4 +45,7 @@ req-articles-comment-post:
 	curl -v -XPOST -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/articles/$(ARTICLE_ID)/comment -d '{ "body": "$(ARTICLE_BODY)" , "article_id":1}'
 
 req-articles-comment-update:
-	curl -v -XPUT -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/articles/20/comment -d '{"body": "$(ARTICLE_UPDATE_BODY)"}'
+	curl -v -XPUT -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/articles/$(ARTICLE_ID)/comment -d '{"body": "$(ARTICLE_UPDATE_BODY)"}'
+
+req-articles-comment-delete:
+	curl -v -XDELETE -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/articles/21/comment

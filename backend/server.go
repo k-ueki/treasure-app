@@ -89,7 +89,7 @@ func (s *Server) Route() *mux.Router {
 
 	r.Methods(http.MethodPost).Path("/articles/{id}/comment").Handler(authChain.Then(AppHandler{articlecommentController.Create}))
 	r.Methods(http.MethodPut).Path("/articles/{id}/comment").Handler(authChain.Then(AppHandler{articlecommentController.Update}))
-	//r.Methods(http.MethodDelete).Path("/articles/{id}/comment").Handler(authChain.Then(AppHandler{articlecommentController.Destroy}))
+	r.Methods(http.MethodDelete).Path("/articles/{id}/comment").Handler(authChain.Then(AppHandler{articlecommentController.Destroy}))
 	//	r.Methods(http.MethodGet).Path("/comment/{id}").Handler(commonChain.Then(AppHandler{commentController.Show}))
 
 	r.PathPrefix("").Handler(commonChain.Then(http.StripPrefix("/img", http.FileServer(http.Dir("./img")))))
