@@ -8,6 +8,8 @@ TOKEN_FILE := .idToken
 ARTICLE_ID:=1
 ARTICLE_TITLE:=title
 ARTICLE_BODY:=body
+ARTICLE_UPDATE_BODY := updated
+
 
 create-token:
 	go run ./cmd/customtoken/main.go $(UID) $(TOKEN_FILE)
@@ -39,8 +41,8 @@ req-private:
 database-init:
 	make -C ../database init
 
-req-article-comment-get:
-	curl -v $(HOST):$(PORT)/comment
+req-articles-comment-post:
+	curl -v -XPOST -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/articles/$(ARTICLE_ID)/comment -d '{ "body": "$(ARTICLE_BODY)" , "article_id":1}'
 
-req-article-comment-post:
-	curl -v -XPOST -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/articles/$(ARTICLE_ID)/comment -d '{"title": "$(ARTICLECOMMETN_TITLE)", "body": "$(ARTICLECOMMENT_BODY)", "article_id":1}'
+req-articles-comment-update:
+	curl -v -XPUT -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/articles/20/comment -d '{"body": "$(ARTICLE_UPDATE_BODY)"}'

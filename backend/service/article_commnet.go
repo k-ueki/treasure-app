@@ -1,6 +1,8 @@
 package service
 
 import (
+	"fmt"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/voyagegroup/treasure-app/dbutil"
@@ -17,26 +19,27 @@ func NewArticleCommentService(db *sqlx.DB) *ArticleComment {
 	return &ArticleComment{db}
 }
 
-//func (a *ArticleComment) Update(id int64, newArticle *model.ArticleComment) error {
-//	_, err := repository.FindArticle(a.db, id)
-//	if err != nil {
-//		return errors.Wrap(err, "failed find article")
-//	}
-//
-//	if err := dbutil.TXHandler(a.db, func(tx *sqlx.Tx) error {
-//		_, err := repository.UpdateArticle(tx, id, newArticle)
-//		if err != nil {
-//			return err
-//		}
-//		if err := tx.Commit(); err != nil {
-//			return err
-//		}
-//		return err
-//	}); err != nil {
-//		return errors.Wrap(err, "failed article update transaction")
-//	}
-//	return nil //}
-//
+func (a *ArticleComment) Update(id int64, newArticleComment *model.ArticleComment) error {
+	_, err := repository.FindArticleComment(a.db, id)
+	if err != nil {
+		return errors.Wrap(err, "failed find article")
+	}
+
+	if err := dbutil.TXHandler(a.db, func(tx *sqlx.Tx) error {
+		_, err := repository.UpdateArticleComment(tx, id, newArticleComment)
+		if err != nil {
+			return err
+		}
+		if err := tx.Commit(); err != nil {
+			return err
+		}
+		return err
+	}); err != nil {
+		return errors.Wrap(err, "failed article update transaction")
+	}
+	return nil
+}
+
 //func (a *Article) Destroy(id int64) error {
 //	_, err := repository.FindArticle(a.db, id)
 //	if err != nil {
