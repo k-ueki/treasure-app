@@ -38,3 +38,9 @@ req-private:
 
 database-init:
 	make -C ../database init
+
+req-article-comment-get:
+	curl -v $(HOST):$(PORT)/comment
+
+req-article-comment-post:
+	curl -v -XPOST -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/articles/$(ARTICLE_ID)/comment -d '{"title": "$(ARTICLECOMMETN_TITLE)", "body": "$(ARTICLECOMMENT_BODY)", "article_id":1}'
