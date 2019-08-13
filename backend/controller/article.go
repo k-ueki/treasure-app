@@ -3,8 +3,10 @@ package controller
 import (
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
@@ -56,6 +58,9 @@ func (a *Article) Show(w http.ResponseWriter, r *http.Request) (int, interface{}
 
 func (a *Article) Create(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
 	newArticle := &model.Article{}
+	auth := r.Header.Get("Authorization")
+	token := strings.Split(auth, " ")[1]
+
 	if err := json.NewDecoder(r.Body).Decode(&newArticle); err != nil {
 		return http.StatusBadRequest, nil, err
 	}
