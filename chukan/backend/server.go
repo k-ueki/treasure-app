@@ -78,11 +78,11 @@ func (s *Server) Route() *mux.Router {
 	r.Methods(http.MethodGet).Path("/private").Handler(authChain.Then(sample.NewPrivateHandler(s.db)))
 
 	ideasController := controller.NewIdeas(s.db)
-	// r.Methods(http.MethodPost).Path("/ideas").Handler(authChain.Then(AppHandler{ideasController.Create}))
-	// r.Methods(http.MethodPut).Path("/articles/{id}").Handler(authChain.Then(AppHandler{articleController.Update}))
-	// r.Methods(http.MethodDelete).Path("/articles/{id}").Handler(authChain.Then(AppHandler{articleController.Destroy}))
+	r.Methods(http.MethodPost).Path("/ideas").Handler(authChain.Then(AppHandler{ideasController.Create}))
+	r.Methods(http.MethodPut).Path("/ideas/{id}").Handler(authChain.Then(AppHandler{ideasController.Update}))
+	r.Methods(http.MethodDelete).Path("/ideas/{id}").Handler(authChain.Then(AppHandler{ideasController.Destroy}))
 	r.Methods(http.MethodGet).Path("/ideas").Handler(commonChain.Then(AppHandler{ideasController.Index}))
-	// r.Methods(http.MethodGet).Path("/ideas/{id}").Handler(commonChain.Then(AppHandler{ideasController.Show}))
+	r.Methods(http.MethodGet).Path("/ideas/{id}").Handler(commonChain.Then(AppHandler{ideasController.Show}))
 
 	// crawlingController := controller.NewCrawler(s.db)
 	// r.Methods(http.MethodGet).Path("/crawl").Handler(commonChain.Then(AppHandler{crawlingController.Index}))

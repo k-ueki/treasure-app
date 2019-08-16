@@ -1,5 +1,5 @@
 -- +goose Up
-CREATE TABLE users (
+CREATE TABLE user (
   id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
   firebase_uid VARCHAR(255) NOT NULL,
   email VARCHAR(255),
