@@ -1,6 +1,8 @@
 package service
 
 import (
+	"database/sql"
+
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"github.com/voyagegroup/treasure-app/dbutil"
@@ -22,18 +24,18 @@ func (i *Idea) FindIdeaDetail(id int64) (*model.IdeaDetail, error) {
 	if err != nil {
 		return nil, err
 	}
-	// tags, err := repository.FindIdeaTagByIdeaID(i.db, id)
-	// if err != nil && err != sql.ErrNoRows {
-	// 	return nil, err
-	// }
-	// comments, err := repository.FindCommentsByIdeaID(i.db, id)
-	// if err != nil && err != sql.ErrNoRows {
-	// 	return nil, err
-	// }
+	tags, err := repository.FindIdeaTagByIdeaID(i.db, id)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
+	comments, err := repository.FindCommentsByIdeaID(i.db, id)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
 	ideaDetail := &model.IdeaDetail{
-		Idea: *idea,
-		// Tags: tags,
-		// Comments: comments,
+		Idea:     *idea,
+		Tags:     tags,
+		Comments: comments,
 	}
 	return ideaDetail, nil
 }
@@ -91,12 +93,12 @@ func (i *Idea) Create(createIdea *model.Idea, tagIds []int64) (int64, error) {
 		if err != nil {
 			return err
 		}
-		// for _, tagId := range tagIds {
-		// 	_, err = repository.CreateArticleTag(tx, id, tagId)
-		// 	if err != nil {
-		// 		return err
-		// 	}
-		// }
+		for _, tagId := range tagIds {
+			_, err = repository.CreateIdeaTag(tx, id, tagId)
+			if err != nil {
+				return err
+			}
+		}
 		if err := tx.Commit(); err != nil {
 			return err
 		}

@@ -16,8 +16,8 @@ type ResponseCreateIdea struct {
 
 type IdeaDetail struct {
 	Idea
-	// Comments []IdeaComment `json:"comments"`
-	Tags []Tag `json:"tags"`
+	Comments []IdeaComment `json:"comments"`
+	Tags     []Tag         `json:"tags"`
 }
 type Idea struct {
 	ID     int64  `db:"id" json:"id"`

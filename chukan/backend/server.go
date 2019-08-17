@@ -83,12 +83,16 @@ func (s *Server) Route() *mux.Router {
 	r.Methods(http.MethodDelete).Path("/ideas/{id}").Handler(authChain.Then(AppHandler{ideasController.Destroy}))
 	r.Methods(http.MethodGet).Path("/ideas").Handler(commonChain.Then(AppHandler{ideasController.Index}))
 	r.Methods(http.MethodGet).Path("/ideas/{id}").Handler(commonChain.Then(AppHandler{ideasController.Show}))
+	r.Methods(http.MethodGet).Path("/ideas/tag/{tag_id}").Handler(commonChain.Then(AppHandler{ideasController.TagSearch}))
 
-	// crawlingController := controller.NewCrawler(s.db)
-	// r.Methods(http.MethodGet).Path("/crawl").Handler(commonChain.Then(AppHandler{crawlingController.Index}))
+	iineController := controller.NewIine(s.db)
+	r.Methods(http.MethodPost).Path("/ideas/{id}/iine").Handler(authChain.Then(AppHandler{iineController.Create}))
 
-	// articleCommentController := controller.NewArticleComment(s.db)
-	// r.Methods(http.MethodPost).Path("/articles/{article_id}/comments").Handler(authChain.Then(AppHandler{articleCommentController.Create}))
+	ideaCommentController := controller.NewIdeaComment(s.db)
+	r.Methods(http.MethodPost).Path("/ideas/{idea_id}/comments").Handler(authChain.Then(AppHandler{ideaCommentController.Create}))
+
+	tagController := controller.NewTag(s.db)
+	r.Methods(http.MethodPost).Path("/tag").Handler(authChain.Then(AppHandler{tagController.Create}))
 
 	r.PathPrefix("").Handler(commonChain.Then(http.StripPrefix("/img", http.FileServer(http.Dir("./img")))))
 	return r

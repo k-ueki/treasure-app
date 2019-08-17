@@ -23,8 +23,8 @@ func NewIdeas(db *sqlx.DB) *Ideas {
 	return &Ideas{db: db}
 }
 
-func (a *Ideas) Index(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
-	ideas, err := repository.AllIdeas(a.db)
+func (i *Ideas) Index(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+	ideas, err := repository.AllIdeas(i.db)
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
@@ -136,4 +136,23 @@ func (i *Ideas) Destroy(w http.ResponseWriter, r *http.Request) (int, interface{
 	}
 
 	return http.StatusNoContent, nil, nil
+}
+
+func (i *Ideas) TagSearch(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+	vars := mux.Vars(r)
+	id, ok := vars["tag_id"]
+	if !ok {
+		return http.StatusBadRequest, nil, &httputil.HTTPError{Message: "invalid path parameter"}
+	}
+
+	tid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return http.StatusBadRequest, nil, err
+	}
+
+	ideas, err := repository.FindIdeasByTagID(i.db, tid)
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+	return http.StatusOK, ideas, nil
 }

@@ -24,17 +24,17 @@ func (a *Article) FindArticleDetail(id int64) (*model.ArticleDetail, error) {
 	if err != nil {
 		return nil, err
 	}
-	tags, err := repository.FindArticleTagByArticleID(a.db, id)
-	if err != nil && err != sql.ErrNoRows {
-		return nil, err
-	}
+	// tags, err := repository.FindArticleTagByArticleID(a.db, id)
+	// if err != nil && err != sql.ErrNoRows {
+	// 	return nil, err
+	// }
 	comments, err := repository.FindCommentsByArticleID(a.db, id)
 	if err != nil && err != sql.ErrNoRows {
 		return nil, err
 	}
 	articleDetail := &model.ArticleDetail{
-		Article:  *article,
-		Tags:     tags,
+		Article: *article,
+		// Tags:     tags,
 		Comments: comments,
 	}
 	return articleDetail, nil
@@ -93,12 +93,12 @@ func (a *Article) Create(createArticle *model.Article, tagIds []int64) (int64, e
 		if err != nil {
 			return err
 		}
-		for _, tagId := range tagIds {
-			_, err = repository.CreateArticleTag(tx, id, tagId)
-			if err != nil {
-				return err
-			}
-		}
+		// for _, tagId := range tagIds {
+		// 	_, err = repository.CreateArticleTag(tx, id, tagId)
+		// 	if err != nil {
+		// 		return err
+		// 	}
+		// }
 		if err := tx.Commit(); err != nil {
 			return err
 		}

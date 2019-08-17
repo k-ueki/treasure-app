@@ -1,15 +1,16 @@
+
 -- +goose Up
-CREATE TABLE user (
+CREATE TABLE idea_comment (
   id int(10) UNSIGNED NOT NULL AUTO_INCREMENT,
-  firebase_uid VARCHAR(255) NOT NULL,
-  email VARCHAR(255),
-  display_name VARCHAR(255),
-  photo_url VARCHAR(255),
+  body TEXT,
+  idea_id INT UNSIGNED NOT NULL,
+  user_id INT UNSIGNED NOT NULL,
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE KEY `firebase_uid` (`firebase_uid`)
+  FOREIGN KEY(user_id) REFERENCES user(id),
+  FOREIGN KEY(idea_id) REFERENCES idea(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- +goose Down
-DROP TABLE user;
+DROP TABLE idea_comment;
