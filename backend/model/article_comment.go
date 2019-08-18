@@ -1,5 +1,6 @@
 package model
 
+
 type CreateRequestArticleComment struct {
 	Body string `json:"body"`
 }
