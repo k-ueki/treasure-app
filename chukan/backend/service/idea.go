@@ -11,43 +11,43 @@ import (
 	"github.com/voyagegroup/treasure-app/repository"
 )
 
-type Article struct {
+type Idea struct {
 	db *sqlx.DB
 }
 
-func NewArticle(db *sqlx.DB) *Article {
-	return &Article{db}
+func NewIdea(db *sqlx.DB) *Idea {
+	return &Idea{db}
 }
 
-func (a *Article) FindArticleDetail(id int64) (*model.ArticleDetail, error) {
-	article, err := repository.FindArticle(a.db, id)
+func (i *Idea) FindIdeaDetail(id int64) (*model.IdeaDetail, error) {
+	idea, err := repository.FindIdea(i.db, id)
 	if err != nil {
 		return nil, err
 	}
-	tags, err := repository.FindArticleTagByArticleID(a.db, id)
+	tags, err := repository.FindIdeaTagByIdeaID(i.db, id)
 	if err != nil && err != sql.ErrNoRows {
 		return nil, err
 	}
-	comments, err := repository.FindCommentsByArticleID(a.db, id)
+	comments, err := repository.FindCommentsByIdeaID(i.db, id)
 	if err != nil && err != sql.ErrNoRows {
 		return nil, err
 	}
-	articleDetail := &model.ArticleDetail{
-		Article:  *article,
+	ideaDetail := &model.IdeaDetail{
+		Idea:     *idea,
 		Tags:     tags,
 		Comments: comments,
 	}
-	return articleDetail, nil
+	return ideaDetail, nil
 }
 
-func (a *Article) Update(id int64, newArticle *model.Article) error {
-	_, err := repository.FindArticle(a.db, id)
+func (i *Idea) Update(id int64, newIdea *model.Idea) error {
+	_, err := repository.FindIdea(i.db, id)
 	if err != nil {
 		return errors.Wrap(err, "failed find article")
 	}
 
-	if err := dbutil.TXHandler(a.db, func(tx *sqlx.Tx) error {
-		_, err := repository.UpdateArticle(tx, id, newArticle)
+	if err := dbutil.TXHandler(i.db, func(tx *sqlx.Tx) error {
+		_, err := repository.UpdateIdea(tx, id, newIdea)
 		if err != nil {
 			return err
 		}
@@ -61,14 +61,14 @@ func (a *Article) Update(id int64, newArticle *model.Article) error {
 	return nil
 }
 
-func (a *Article) Destroy(id int64) error {
-	_, err := repository.FindArticle(a.db, id)
+func (i *Idea) Destroy(id int64) error {
+	_, err := repository.FindIdea(i.db, id)
 	if err != nil {
 		return errors.Wrap(err, "failed find article")
 	}
 
-	if err := dbutil.TXHandler(a.db, func(tx *sqlx.Tx) error {
-		_, err := repository.DestroyArticle(tx, id)
+	if err := dbutil.TXHandler(i.db, func(tx *sqlx.Tx) error {
+		_, err := repository.DestroyIdea(tx, id)
 		if err != nil {
 			return err
 		}
@@ -82,10 +82,10 @@ func (a *Article) Destroy(id int64) error {
 	return nil
 }
 
-func (a *Article) Create(createArticle *model.Article, tagIds []int64) (int64, error) {
+func (i *Idea) Create(createIdea *model.Idea, tagIds []int64) (int64, error) {
 	var createdId int64
-	if err := dbutil.TXHandler(a.db, func(tx *sqlx.Tx) error {
-		result, err := repository.CreateArticle(tx, createArticle)
+	if err := dbutil.TXHandler(i.db, func(tx *sqlx.Tx) error {
+		result, err := repository.CreateIdea(tx, createIdea)
 		if err != nil {
 			return err
 		}
@@ -94,7 +94,7 @@ func (a *Article) Create(createArticle *model.Article, tagIds []int64) (int64, e
 			return err
 		}
 		for _, tagId := range tagIds {
-			_, err = repository.CreateArticleTag(tx, id, tagId)
+			_, err = repository.CreateIdeaTag(tx, id, tagId)
 			if err != nil {
 				return err
 			}

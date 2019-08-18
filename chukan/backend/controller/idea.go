@@ -3,79 +3,59 @@ package controller
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
-	"log"
 	"net/http"
 	"strconv"
 
+	"github.com/gorilla/mux"
+	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"github.com/voyagegroup/treasure-app/httputil"
 	"github.com/voyagegroup/treasure-app/model"
 	"github.com/voyagegroup/treasure-app/repository"
 	"github.com/voyagegroup/treasure-app/service"
 )
 
-type Article struct {
+type Ideas struct {
 	db *sqlx.DB
 }
 
-func NewArticle(db *sqlx.DB) *Article {
-	return &Article{db: db}
+func NewIdeas(db *sqlx.DB) *Ideas {
+	return &Ideas{db: db}
 }
 
-func (a *Article) Index(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
-	articles, err := repository.AllArticle(a.db)
+func (i *Ideas) Index(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+	ideas, err := repository.AllIdeas(i.db)
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
-	return http.StatusOK, articles, nil
+	return http.StatusOK, ideas, nil
 }
 
-func (a *Article) Show(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+func (i *Ideas) Show(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
 		return http.StatusBadRequest, nil, &httputil.HTTPError{Message: "invalid path parameter"}
 	}
 
-	aid, err := strconv.ParseInt(id, 10, 64)
+	iid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return http.StatusBadRequest, nil, err
 	}
 
-	articleService := service.NewArticle(a.db)
-	articleDetail, err := articleService.FindArticleDetail(aid)
+	ideaservice := service.NewIdea(i.db)
+	ideaDetail, err := ideaservice.FindIdeaDetail(iid)
 	if err != nil && err == sql.ErrNoRows {
 		return http.StatusNotFound, nil, err
 	} else if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
-
-	return http.StatusCreated, articleDetail, nil
+	return http.StatusCreated, ideaDetail, nil
 }
 
-func (a *Article) Create(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
-
-	newArticle := &model.Article{}
-	contextUser, err := httputil.GetUserFromContext(r.Context())
-	if err != nil {
-		log.Print(err)
-		return http.StatusBadRequest, nil, err
-	}
-	user, err := repository.GetUser(a.dbx, contextUser.FirebaseUID)
-
-	if err != nil {
-		fmt.Println("user")
-		return http.StatusBadRequest, nil, err
-	}
-	fmt.Println(user.ID)
-	newArticle.UserID = &user.ID
-
-	if err := json.NewDecoder(r.Body).Decode(&newArticle); err != nil {
-		fmt.Println("Decode")
-
+func (i *Ideas) Create(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+	reqParam := &model.RequestCreateIdea{}
+	if err := json.NewDecoder(r.Body).Decode(&reqParam); err != nil {
 		return http.StatusBadRequest, nil, err
 	}
 
@@ -84,48 +64,48 @@ func (a *Article) Create(w http.ResponseWriter, r *http.Request) (int, interface
 		return http.StatusInternalServerError, nil, err
 	}
 
-	createArticle := &model.Article{
+	createIdea := &model.Idea{
 		Title:  reqParam.Title,
 		Body:   reqParam.Body,
 		UserID: &user.ID,
 	}
 
-	articleService := service.NewArticle(a.db)
-	id, err := articleService.Create(createArticle, reqParam.TagIDs)
+	ideaservice := service.NewIdea(i.db)
+	id, err := ideaservice.Create(createIdea, reqParam.TagIDs)
 	if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
 
-	respParam := &model.ResponseCreateArticle{
+	respParam := &model.ResponseCreateIdea{
 		ID:     id,
-		Title:  createArticle.Title,
-		Body:   createArticle.Body,
-		UserID: createArticle.UserID,
+		Title:  createIdea.Title,
+		Body:   createIdea.Body,
+		UserID: createIdea.UserID,
 		TagIDs: reqParam.TagIDs,
 	}
 
 	return http.StatusCreated, respParam, nil
 }
 
-func (a *Article) Update(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+func (i *Ideas) Update(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
 		return http.StatusBadRequest, nil, &httputil.HTTPError{Message: "invalid path parameter"}
 	}
 
-	aid, err := strconv.ParseInt(id, 10, 64)
+	iid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return http.StatusBadRequest, nil, err
 	}
 
-	reqParam := &model.Article{}
+	reqParam := &model.Idea{}
 	if err := json.NewDecoder(r.Body).Decode(&reqParam); err != nil {
 		return http.StatusBadRequest, nil, err
 	}
 
-	articleService := service.NewArticle(a.db)
-	err = articleService.Update(aid, reqParam)
+	ideaservice := service.NewIdea(i.db)
+	err = ideaservice.Update(iid, reqParam)
 	if err != nil && errors.Cause(err) == sql.ErrNoRows {
 		return http.StatusNotFound, nil, err
 	} else if err != nil {
@@ -135,20 +115,20 @@ func (a *Article) Update(w http.ResponseWriter, r *http.Request) (int, interface
 	return http.StatusNoContent, nil, nil
 }
 
-func (a *Article) Destroy(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+func (i *Ideas) Destroy(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
 	vars := mux.Vars(r)
 	id, ok := vars["id"]
 	if !ok {
 		return http.StatusBadRequest, nil, &httputil.HTTPError{Message: "invalid path parameter"}
 	}
 
-	aid, err := strconv.ParseInt(id, 10, 64)
+	iid, err := strconv.ParseInt(id, 10, 64)
 	if err != nil {
 		return http.StatusBadRequest, nil, err
 	}
 
-	articleService := service.NewArticle(a.db)
-	err = articleService.Destroy(aid)
+	ideaservice := service.NewIdea(i.db)
+	err = ideaservice.Destroy(iid)
 	if err != nil && errors.Cause(err) == sql.ErrNoRows {
 		return http.StatusNotFound, nil, err
 	} else if err != nil {
@@ -156,4 +136,23 @@ func (a *Article) Destroy(w http.ResponseWriter, r *http.Request) (int, interfac
 	}
 
 	return http.StatusNoContent, nil, nil
+}
+
+func (i *Ideas) TagSearch(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
+	vars := mux.Vars(r)
+	id, ok := vars["tag_id"]
+	if !ok {
+		return http.StatusBadRequest, nil, &httputil.HTTPError{Message: "invalid path parameter"}
+	}
+
+	tid, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return http.StatusBadRequest, nil, err
+	}
+
+	ideas, err := repository.FindIdeasByTagID(i.db, tid)
+	if err != nil {
+		return http.StatusInternalServerError, nil, err
+	}
+	return http.StatusOK, ideas, nil
 }

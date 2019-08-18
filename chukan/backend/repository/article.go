@@ -22,13 +22,6 @@ SELECT id, title, body, user_id FROM article WHERE id = ?
 `, id); err != nil {
 		return nil, err
 	}
-
-	comments, err := FindArticleCommentByAID(db, id)
-	if err != nil {
-		return nil, err
-	}
-	a.Comments = *comments
-
 	return &a, nil
 }
 

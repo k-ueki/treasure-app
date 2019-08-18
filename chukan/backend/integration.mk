@@ -5,11 +5,9 @@ PORT := 1991
 HOST := localhost
 TOKEN_FILE := .idToken
 
-ARTICLE_ID:=2
+ARTICLE_ID:=1
 ARTICLE_TITLE:=title
 ARTICLE_BODY:=body
-ARTICLE_UPDATE_BODY := updated
-
 
 ARTICLE_COMMENT_BODY:=bodycomment
 
@@ -47,11 +45,22 @@ req-private:
 database-init:
 	make -C ../database init
 
-req-articles-comment-post:
-	curl -v -XPOST -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/articles/$(ARTICLE_ID)/comment -d '{ "body": "$(ARTICLE_BODY)" , "article_id":1}'
 
-req-articles-comment-update:
-	curl -v -XPUT -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/articles/$(ARTICLE_ID)/comment -d '{"body": "$(ARTICLE_UPDATE_BODY)"}'
 
-req-articles-comment-delete:
-	curl -v -XDELETE -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/articles/21/comment
+req-ideas-post:
+	curl -v -XPOST -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/ideas -d '{"title": "$(ARTICLE_TITLE)", "body": "$(ARTICLE_BODY)", "tag_ids": [1, 2]}'
+
+req-ideas-update:
+	curl -v -XPUT -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/ideas/1 -d '{"title": "updated", "body": "updated_body"}'
+
+req-ideas-delete:
+	curl -v -XDELETE -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/ideas/2
+
+req-ideas-comment-post:
+	curl -v -XPOST -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/ideas/$(ARTICLE_ID)/comments -d '{"body": "$(ARTICLE_COMMENT_BODY)"}'
+
+req-tag-post:
+	curl -v -XPOST -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/tag -d '{"name": "tag!"}'
+
+req-iine-post:
+	curl -v -XPOST -H "Authorization: Bearer $(shell cat ./$(TOKEN_FILE))" $(HOST):$(PORT)/ideas/1/iine -d '{"id":1}'

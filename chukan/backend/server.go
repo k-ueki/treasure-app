@@ -77,21 +77,22 @@ func (s *Server) Route() *mux.Router {
 	r.Methods(http.MethodGet).Path("/public").Handler(commonChain.Then(sample.NewPublicHandler()))
 	r.Methods(http.MethodGet).Path("/private").Handler(authChain.Then(sample.NewPrivateHandler(s.db)))
 
+	ideasController := controller.NewIdeas(s.db)
+	r.Methods(http.MethodPost).Path("/ideas").Handler(authChain.Then(AppHandler{ideasController.Create}))
+	r.Methods(http.MethodPut).Path("/ideas/{id}").Handler(authChain.Then(AppHandler{ideasController.Update}))
+	r.Methods(http.MethodDelete).Path("/ideas/{id}").Handler(authChain.Then(AppHandler{ideasController.Destroy}))
+	r.Methods(http.MethodGet).Path("/ideas").Handler(commonChain.Then(AppHandler{ideasController.Index}))
+	r.Methods(http.MethodGet).Path("/ideas/{id}").Handler(commonChain.Then(AppHandler{ideasController.Show}))
+	r.Methods(http.MethodGet).Path("/ideas/tag/{tag_id}").Handler(commonChain.Then(AppHandler{ideasController.TagSearch}))
 
-	articleController := controller.NewArticle(s.dbx)
-	articlecommentController := controller.NewArticleComment(s.dbx)
+	iineController := controller.NewIine(s.db)
+	r.Methods(http.MethodPost).Path("/ideas/{id}/iine").Handler(authChain.Then(AppHandler{iineController.Create}))
 
-	r.Methods(http.MethodPost).Path("/articles").Handler(authChain.Then(AppHandler{articleController.Create}))
-	r.Methods(http.MethodPut).Path("/articles/{id}").Handler(authChain.Then(AppHandler{articleController.Update}))
-	r.Methods(http.MethodDelete).Path("/articles/{id}").Handler(authChain.Then(AppHandler{articleController.Destroy}))
-	r.Methods(http.MethodGet).Path("/articles").Handler(commonChain.Then(AppHandler{articleController.Index}))
-	r.Methods(http.MethodGet).Path("/articles/{id}").Handler(commonChain.Then(AppHandler{articleController.Show}))
+	ideaCommentController := controller.NewIdeaComment(s.db)
+	r.Methods(http.MethodPost).Path("/ideas/{idea_id}/comments").Handler(authChain.Then(AppHandler{ideaCommentController.Create}))
 
-	r.Methods(http.MethodPost).Path("/articles/{id}/comment").Handler(authChain.Then(AppHandler{articlecommentController.Create}))
-	r.Methods(http.MethodPut).Path("/articles/{id}/comment").Handler(authChain.Then(AppHandler{articlecommentController.Update}))
-	r.Methods(http.MethodDelete).Path("/articles/{id}/comment").Handler(authChain.Then(AppHandler{articlecommentController.Destroy}))
-	//	r.Methods(http.MethodGet).Path("/comment/{id}").Handler(commonChain.Then(AppHandler{commentController.Show}))
-
+	tagController := controller.NewTag(s.db)
+	r.Methods(http.MethodPost).Path("/tag").Handler(authChain.Then(AppHandler{tagController.Create}))
 
 	r.PathPrefix("").Handler(commonChain.Then(http.StripPrefix("/img", http.FileServer(http.Dir("./img")))))
 	return r

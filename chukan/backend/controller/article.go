@@ -3,13 +3,12 @@ package controller
 import (
 	"database/sql"
 	"encoding/json"
-	"fmt"
+	"net/http"
+	"strconv"
+
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
-	"log"
-	"net/http"
-	"strconv"
 
 	"github.com/voyagegroup/treasure-app/httputil"
 	"github.com/voyagegroup/treasure-app/model"
@@ -57,25 +56,8 @@ func (a *Article) Show(w http.ResponseWriter, r *http.Request) (int, interface{}
 }
 
 func (a *Article) Create(w http.ResponseWriter, r *http.Request) (int, interface{}, error) {
-
-	newArticle := &model.Article{}
-	contextUser, err := httputil.GetUserFromContext(r.Context())
-	if err != nil {
-		log.Print(err)
-		return http.StatusBadRequest, nil, err
-	}
-	user, err := repository.GetUser(a.dbx, contextUser.FirebaseUID)
-
-	if err != nil {
-		fmt.Println("user")
-		return http.StatusBadRequest, nil, err
-	}
-	fmt.Println(user.ID)
-	newArticle.UserID = &user.ID
-
-	if err := json.NewDecoder(r.Body).Decode(&newArticle); err != nil {
-		fmt.Println("Decode")
-
+	reqParam := &model.RequestCreateArticle{}
+	if err := json.NewDecoder(r.Body).Decode(&reqParam); err != nil {
 		return http.StatusBadRequest, nil, err
 	}
 
