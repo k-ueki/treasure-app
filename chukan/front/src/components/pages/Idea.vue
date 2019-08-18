@@ -1,10 +1,11 @@
 <template>
-	<div class="">
+	<divh class="">
 		<h2>Idea</h2> <div v-show="data" style="border:1px solid black;">
 			<div>title - {{ ideaTitle }}</div>
 			<div>body - {{ ideaBody }}</div>
 			<div>tags - {{ tags }}</div>
 		</div>
+
 
 		<h2>Comments</h2>
 		<div v-for="comment in comments" style="border:1px solid black;">

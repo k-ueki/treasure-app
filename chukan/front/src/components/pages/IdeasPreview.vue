@@ -3,7 +3,9 @@
 		<h2>All Ideas</h2>
 		<div v-for="idea in ideas" v-on:click="selectIdea(idea.id)" style="border:1px solid black;">
 			<br/>
+
 			<!-- <div>idea_id &#45; {{ idea.id }}</div> -->
+
 			<div>title - {{ idea.title }}</div>
 			<div>body - {{ idea.body }}</div>
 			<br/>
