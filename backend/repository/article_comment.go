@@ -7,6 +7,7 @@ import (
 	"github.com/voyagegroup/treasure-app/model"
 )
 
+
 func AllArticleComment(db *sqlx.DB) ([]model.ArticleComment, error) {
 	a := make([]model.ArticleComment, 0)
 	if err := db.Select(&a, `SELECT id, user_id, article_id, body FROM article`); err != nil {
@@ -39,6 +40,7 @@ func CreateArticleComment(db *sqlx.Tx, a *model.ArticleComment) (sql.Result, err
 		return nil, err
 	}
 	defer stmt.Close()
+
 	return stmt.Exec(a.UserID, a.ArticleID, a.Body)
 }
 

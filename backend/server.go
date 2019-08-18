@@ -3,27 +3,25 @@ package server
 import (
 	"fmt"
 
-	"github.com/voyagegroup/treasure-app/sample"
-
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/gorilla/handlers"
-	"github.com/justinas/alice"
-
 	"firebase.google.com/go/auth"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/jmoiron/sqlx"
+	"github.com/justinas/alice"
 	"github.com/rs/cors"
 	"github.com/voyagegroup/treasure-app/controller"
 	db2 "github.com/voyagegroup/treasure-app/db"
 	"github.com/voyagegroup/treasure-app/firebase"
 	"github.com/voyagegroup/treasure-app/middleware"
+	"github.com/voyagegroup/treasure-app/sample"
 )
 
 type Server struct {
-	dbx        *sqlx.DB
+	db         *sqlx.DB
 	router     *mux.Router
 	authClient *auth.Client
 }
@@ -40,11 +38,11 @@ func (s *Server) Init(datasource string) {
 	s.authClient = authClient
 
 	db := db2.NewDB(datasource)
-	dbx, err := db.Open()
+	dbcon, err := db.Open()
 	if err != nil {
 		log.Fatalf("failed db init. %s", err)
 	}
-	s.dbx = dbx
+	s.db = dbcon
 	s.router = s.Route()
 }
 
@@ -60,7 +58,7 @@ func (s *Server) Run(addr string) {
 }
 
 func (s *Server) Route() *mux.Router {
-	authMiddleware := middleware.NewAuthMiddleware(s.authClient, s.dbx)
+	authMiddleware := middleware.NewAuth(s.authClient, s.db)
 	corsMiddleware := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
 		AllowedHeaders: []string{"Authorization"},
@@ -77,10 +75,12 @@ func (s *Server) Route() *mux.Router {
 
 	r := mux.NewRouter()
 	r.Methods(http.MethodGet).Path("/public").Handler(commonChain.Then(sample.NewPublicHandler()))
-	r.Methods(http.MethodGet).Path("/private").Handler(authChain.Then(sample.NewPrivateHandler(s.dbx)))
+	r.Methods(http.MethodGet).Path("/private").Handler(authChain.Then(sample.NewPrivateHandler(s.db)))
+
 
 	articleController := controller.NewArticle(s.dbx)
 	articlecommentController := controller.NewArticleComment(s.dbx)
+
 	r.Methods(http.MethodPost).Path("/articles").Handler(authChain.Then(AppHandler{articleController.Create}))
 	r.Methods(http.MethodPut).Path("/articles/{id}").Handler(authChain.Then(AppHandler{articleController.Update}))
 	r.Methods(http.MethodDelete).Path("/articles/{id}").Handler(authChain.Then(AppHandler{articleController.Destroy}))
@@ -91,6 +91,7 @@ func (s *Server) Route() *mux.Router {
 	r.Methods(http.MethodPut).Path("/articles/{id}/comment").Handler(authChain.Then(AppHandler{articlecommentController.Update}))
 	r.Methods(http.MethodDelete).Path("/articles/{id}/comment").Handler(authChain.Then(AppHandler{articlecommentController.Destroy}))
 	//	r.Methods(http.MethodGet).Path("/comment/{id}").Handler(commonChain.Then(AppHandler{commentController.Show}))
+
 
 	r.PathPrefix("").Handler(commonChain.Then(http.StripPrefix("/img", http.FileServer(http.Dir("./img")))))
 	return r
