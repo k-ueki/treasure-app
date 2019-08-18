@@ -52,3 +52,13 @@ WHERE idea_tag.tag_id = ?
 	}
 	return i, nil
 }
+
+func FindIdeasByWord(db *sqlx.DB, searchWord string) ([]model.Idea, error) {
+	i := make([]model.Idea, 0)
+	if err := db.Select(&i, `
+SELECT id,title,body,user_id FROM idea WHERE body LIKE ?
+`, searchWord); err != nil {
+		return nil, err
+	}
+	return i, nil
+}

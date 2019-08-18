@@ -3,6 +3,7 @@
 	  <!-- <Idea></Idea> -->
 	  <!-- <IdeasPreview></IdeasPreview> -->
 	  <!-- <Auth></Auth> -->
+
 	  <router-view></router-view>
   </div>
 </template>
