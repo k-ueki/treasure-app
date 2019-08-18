@@ -32,10 +32,15 @@ func (i *Idea) FindIdeaDetail(id int64) (*model.IdeaDetail, error) {
 	if err != nil && err != sql.ErrNoRows {
 		return nil, err
 	}
+	iines, err := repository.FindIinesByIdeaId(i.db, id)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, err
+	}
 	ideaDetail := &model.IdeaDetail{
 		Idea:     *idea,
 		Tags:     tags,
 		Comments: comments,
+		Iine:     iines,
 	}
 	return ideaDetail, nil
 }

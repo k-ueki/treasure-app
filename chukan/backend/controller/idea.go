@@ -50,6 +50,7 @@ func (i *Ideas) Show(w http.ResponseWriter, r *http.Request) (int, interface{}, 
 	} else if err != nil {
 		return http.StatusInternalServerError, nil, err
 	}
+
 	return http.StatusCreated, ideaDetail, nil
 }
 

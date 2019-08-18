@@ -18,6 +18,7 @@ type IdeaDetail struct {
 	Idea
 	Comments []IdeaComment `json:"comments"`
 	Tags     []Tag         `json:"tags"`
+	Iine     []Iine        `json:"iine"`
 }
 type Idea struct {
 	ID     int64  `db:"id" json:"id"`

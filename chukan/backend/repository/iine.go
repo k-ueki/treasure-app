@@ -29,17 +29,16 @@ INSERT INTO iine (idea_id,user_id) VALUES (?,?)
 	return stmt.Exec(createIine.IdeaID, createIine.UserID)
 }
 
-// func FindIdeaTagByIdeaID(db *sqlx.DB, ideaId int64) ([]model.Tag, error) {
-// 	t := make([]model.Tag, 0)
-// 	if err := db.Select(&t, `
-// SELECT tag.id as id, tag.name as name FROM idea_tag
-// INNER JOIN tag ON tag.id = idea_tag.tag_id
-// WHERE idea_tag.idea_id = ?
-// `, ideaId); err != nil {
-// 		return nil, err
-// 	}
-// 	return t, nil
-// }
+func FindIinesByIdeaId(db *sqlx.DB, ideaId int64) ([]model.Iine, error) {
+	i := make([]model.Iine, 0)
+	if err := db.Select(&i, `
+SELECT id, idea_id, user_id FROM iine WHERE idea_id = ?
+`, ideaId); err != nil {
+		return nil, err
+	}
+	return i, nil
+}
+
 //
 // func FindIdeasByTagID(db *sqlx.DB, tagId int64) ([]model.Idea, error) {
 // 	i := make([]model.Idea, 0)
