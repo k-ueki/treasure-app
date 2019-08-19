@@ -2,7 +2,7 @@
   <div id="app">
 	  <!-- <Idea></Idea> -->
 	  <!-- <IdeasPreview></IdeasPreview> -->
-	  <!-- <Auth></Auth> -->
+	  <Auth></Auth>
 
 	  <router-view></router-view>
   </div>

@@ -4,8 +4,9 @@ import firebase from 'firebase/app'
 
 import router from './router.js'
 
-
 Vue.config.productionTip = false
+
+console.log("test",process.env.VUE_APP_TEST);
 
 new Vue({
 	router,

@@ -22,7 +22,7 @@
 <script>
 import axios from 'axios'
 
-import router from '../../router.js'
+// import router from '../../router.js'
 
 const baseUrl = "http://localhost:1991/ideas"
 
@@ -48,7 +48,7 @@ export default{
 	methods:{
 		selectIdea(idea_id){
 			console.log(idea_id)
-			router.push({ path: '/ideas/'+idea_id })
+			this.$router.push({ path: '/ideas/'+idea_id })
 		},
 		openIdeaArea(){
 			this.postArea = true;

@@ -1,6 +1,6 @@
 <template>
 	<div class="auth">
-		<button v-if="stateUser==null" v-on:click="login()">Pleade login</button>
+		<button v-on:click="login()">Pleade login</button>
 		<div>aoiep</div>
 	</div>
 </template>
@@ -16,7 +16,6 @@ const firebaseConfig = {
   messagingSenderId: process.env.FIREBASE_MESSAGINGSENDERID,
   appId: process.env.FIREBASE_APPID
 };
-
 const githubProvider = new firebase.auth.GithubAuthProvider();
 
 export default {
@@ -25,17 +24,16 @@ export default {
 	},
 	methods:{
 		login:function(){
-  		firebase.initializeApp(firebaseConfig);
-			firebase.auth().signInWithPopup(githubProvider);
+			console.log(firebaseConfig);
+			console.log(process.env.VUE_APP_FIREBASE_APIKEY);
+  		// firebase.initializeApp(firebaseConfig);
+			// firebase.auth().signInWithPopup(githubProvider);
 		},
 		logout:function(){
 			firebase.auth().signOut();
 		}
 	}
-
 }
-
-
 </script>
 <style>
 </style>

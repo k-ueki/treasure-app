@@ -1,5 +1,5 @@
 <template>
-	<divh class="">
+	<div class="">
 		<h2>Idea</h2> <div v-show="data" style="border:1px solid black;">
 			<div>title - {{ ideaTitle }}</div>
 			<div>body - {{ ideaBody }}</div>
